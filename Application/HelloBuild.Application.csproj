@@ -15,4 +15,8 @@
     <ProjectReference Include="..\Infrastructure\HelloBuild.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Helpers\Interfaces\" />
+  </ItemGroup>
+
 </Project>

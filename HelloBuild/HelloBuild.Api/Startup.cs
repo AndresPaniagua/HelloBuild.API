@@ -1,12 +1,10 @@
-using HelloBuild.Application.Helpers;
-using HelloBuild.Application.Helpers.Interfaces;
+using AutoMapper;
 using HelloBuild.Application.Services;
 using HelloBuild.Application.Services.Interfaces;
-using AutoMapper;
-using HelloBuild.Infrastructure.Repositories;
-using HelloBuild.Infrastructure.Repositories.Interfaces;
 using HelloBuild.Infrastructure.Context;
 using HelloBuild.Infrastructure.Mapper;
+using HelloBuild.Infrastructure.Repositories;
+using HelloBuild.Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -76,7 +74,7 @@ namespace HelloBuild.Api
         {
             _ = services.AddDbContext<PersistenceContext>(opt =>
             {
-                _ = opt.UseInMemoryDatabase("PruebaIngreso");
+                _ = opt.UseInMemoryDatabase("HelloBuildDB");
             });
         }
 
@@ -89,25 +87,24 @@ namespace HelloBuild.Api
 
         public void AddServices(IServiceCollection services)
         {
-            _ = services.AddScoped<ILoanService, LoanService>();
-            _ = services.AddScoped<IValidateUserHelper, ValidateUserHelper>();
+            _ = services.AddScoped<IUserService, UserService>();
         }
 
         public void AddRepositories(IServiceCollection services)
         {
             _ = services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-            _ = services.AddScoped<ILoanRepository, LoanRepository>();
+            _ = services.AddScoped<IUserRepository, UserRepository>();
         }
 
         public void AddSwaggerDocument(IServiceCollection services)
         {
             _ = services.AddSwaggerDocument(config =>
             {
-                config.DocumentName = "Ceiba technical test";
-                config.Title = "Andrés Paniagua Ceiba Test";
+                config.DocumentName = "Hello Build technical test";
+                config.Title = "Andrés Paniagua Hello Build Test";
                 config.Version = "1.0";
 
-                config.Description = "This is the technical test to enter Ceiba | Andrés Paniagua";
+                config.Description = "This is the technical test to enter Hello Build | Andrés Paniagua";
             });
         }
 

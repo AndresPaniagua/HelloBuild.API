@@ -8,15 +8,7 @@ namespace HelloBuild.Infrastructure.Mapper
     {
         public MapperProfile()
         {
-            _ = CreateMap<LoanRequest, Prestamo>()
-                .ForMember(loanR => loanR.Isbn, pres => pres.MapFrom(src => src.Isbn))
-                .ForMember(loanR => loanR.UserId, pres => pres.MapFrom(src => src.IdentificacionUsuario))
-                .ForMember(loanR => loanR.UserType, pres => pres.MapFrom(src => src.TipoUsuario))
-                .ForMember(loanR => loanR.MaxDateReturn, pres => pres.MapFrom(src => src.TiempoDevolucion));
-
-            _ = CreateMap<Prestamo, LoanUserResponse>()
-               .ForMember(loanR => loanR.ReturnDate, pres => pres.MapFrom(src => src.MaxDateReturn));
-
+            _ = CreateMap<UserRequest, User>();
         }
     }
 }

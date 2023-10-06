@@ -33,4 +33,8 @@
   <ItemGroup>
     <ProjectReference Include="..\HelloBuild.Api\HelloBuild.Api.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Application\" />
+    <Folder Include="Infrastructure\" />
+  </ItemGroup>
 </Project>

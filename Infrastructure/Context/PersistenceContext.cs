@@ -13,7 +13,7 @@ namespace HelloBuild.Infrastructure.Context
             Config = config;
         }
 
-        public virtual DbSet<Prestamo>? Prestamos { get; set; }
+        public virtual DbSet<User>? Users { get; set; }
 
         public async Task CommitAsync()
         {
