@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 
 namespace HelloBuild.Api.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class TokenController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -28,11 +30,12 @@ namespace HelloBuild.Api.Controllers
         /// <param name="filters">Filters to apply.</param>
         /// <returns></returns>
         /// <response code="200">Succes, retrieve the token.</response>
-        /// <response code="404">No Content</response>
-        /// <response code="500">Internal Server Error</response>
+        /// <response code="400">No Content</response>
         [HttpPost]
         [Route("Authentication")]
-        public async Task<IActionResult> Authentication(UserExistRequest request)
+        [ProducesResponseType(typeof(object), 200)]
+        [ProducesResponseType(typeof(object), 400)]
+        public async Task<IActionResult> Authentication(TokenRequest request)
         {
             if (await ValidateUser(request))
             {
@@ -43,9 +46,14 @@ namespace HelloBuild.Api.Controllers
             return BadRequest(new { errorMessage = "Invalid user" });
         }
 
-        private async Task<bool> ValidateUser(UserExistRequest request)
+        private async Task<bool> ValidateUser(TokenRequest request)
         {
-            Response user = await _userService.UserExist(request);
+            UserExistRequest userExistRequest = new()
+            {
+                Email = request.Email,
+                Password = request.Password,
+            };
+            Response user = await _userService.UserExist(userExistRequest);
             return user.IsSuccess;
         }
 
