@@ -8,5 +8,7 @@ namespace HelloBuild.Application.Services.Interfaces
 
         Task<Response> UserExist(UserExistRequest request);
 
+        Task<Response> GetUserInfo(GetUserInfoRequest request);
+
     }
 }

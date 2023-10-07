@@ -1,4 +1,5 @@
-﻿using HelloBuild.Application.Services.Interfaces;
+﻿using AutoMapper;
+using HelloBuild.Application.Services.Interfaces;
 using HelloBuild.Domain.Models;
 using Newtonsoft.Json;
 using Octokit;
@@ -7,6 +8,13 @@ namespace HelloBuild.Application.Services
 {
     public class GithubService : IGithubService
     {
+        private readonly IMapper _mapper;
+
+        public GithubService(IMapper mapper)
+        {
+            _mapper = mapper;
+        }
+
         public async Task<(bool, List<GitRepositoryResponse>)> GetRepository(string username, string personalToken)
         {
             try
@@ -49,8 +57,16 @@ namespace HelloBuild.Application.Services
                 if (response.IsSuccessStatusCode)
                 {
                     string content = await response.Content.ReadAsStringAsync();
-                    List<GitRepositoryResponse>? favoriteRepositories = JsonConvert.DeserializeObject<List<GitRepositoryResponse>>(content);
-                    return (true, favoriteRepositories ?? new List<GitRepositoryResponse>());
+                    List<GitFavRepositoryResponse>? favoriteRepositories = JsonConvert.DeserializeObject<List<GitFavRepositoryResponse>>(content);
+
+                    if (favoriteRepositories == null)
+                    {
+                        return (true, new List<GitRepositoryResponse>());
+                    }
+
+                    List<GitRepositoryResponse> favRepositories = _mapper.Map<List<GitRepositoryResponse>>(favoriteRepositories);
+
+                    return (true, favRepositories);
                 }
                 else
                 {

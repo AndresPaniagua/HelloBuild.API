@@ -1,8 +1,8 @@
 ﻿using HelloBuild.Application.Services.Interfaces;
 using HelloBuild.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -57,6 +57,29 @@ namespace HelloBuild.Api.Controllers
         public async Task<IActionResult> Get(UserExistRequest request)
         {
             Response response = await _userService.UserExist(request);
+
+            return response.StatusCode == HttpStatusCode.NotFound
+                ? (IActionResult)NotFound(response.Content)
+                : response.StatusCode == HttpStatusCode.InternalServerError
+                ? (IActionResult)StatusCode(StatusCodes.Status500InternalServerError, response.Content)
+                : (IActionResult)Ok(response.Content);
+        }
+
+        /// <summary>
+        /// Is User registered?
+        /// </summary>
+        /// <param name="id_prestamo">Loan ID.</param>
+        /// <returns></returns>
+        /// <response code="200">Ok</response>
+        /// <response code="400">Bad Request</response>
+        [HttpPost]
+        [Route("GetUserInfo")]
+        [Authorize]
+        [ProducesResponseType(typeof(GetUserInfoResponse), 200)]
+        [ProducesResponseType(typeof(BadResponse), 404)]
+        public async Task<IActionResult> GetUserInfo(GetUserInfoRequest request)
+        {
+            Response response = await _userService.GetUserInfo(request);
 
             return response.StatusCode == HttpStatusCode.NotFound
                 ? (IActionResult)NotFound(response.Content)

@@ -24,6 +24,10 @@ namespace HelloBuild.Infrastructure.Context
         {
             //_ = modelBuilder.HasDefaultSchema(Config.GetValue<string>("SchemaName"));
 
+            modelBuilder.Entity<User>()
+                .HasIndex(e => e.Email)
+                .IsUnique();
+
             base.OnModelCreating(modelBuilder);
         }
 

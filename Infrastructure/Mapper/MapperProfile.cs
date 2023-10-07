@@ -9,6 +9,11 @@ namespace HelloBuild.Infrastructure.Mapper
         public MapperProfile()
         {
             _ = CreateMap<UserRequest, User>();
+
+            _ = CreateMap<User, GetUserInfoResponse>();
+
+            _ = CreateMap<GitFavRepositoryResponse, GitRepositoryResponse>()
+               .ForMember(repos => repos.SvnUrl, fav => fav.MapFrom(src => src.Svn_Url));
         }
     }
 }

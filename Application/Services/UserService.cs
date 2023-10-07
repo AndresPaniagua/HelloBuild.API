@@ -27,22 +27,19 @@ namespace HelloBuild.Application.Services
                 await _userRepository.AddAsync(entity);
                 int savedChanges = await _userRepository.SaveChangesAsync();
 
-                if (savedChanges <= 0)
-                {
-                    return new Response
+                return savedChanges <= 0
+                    ? new Response
                     {
                         StatusCode = HttpStatusCode.BadRequest,
                         IsSuccess = false,
                         Content = new BadResponse { Message = $"Could not save user correctly" }
+                    }
+                    : new Response
+                    {
+                        StatusCode = HttpStatusCode.OK,
+                        IsSuccess = true,
+                        Content = new UserResponse { Message = "User successfully added", IsSave = true }
                     };
-                }
-
-                return new Response
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    IsSuccess = true,
-                    Content = new UserResponse { Message = "User successfully added", IsSave = true }
-                };
             }
             catch (Exception ex)
             {
@@ -60,7 +57,37 @@ namespace HelloBuild.Application.Services
             try
             {
                 bool exists = await _userRepository.FinduserEmailPasswordAsync(request);
-                if (!exists)
+                return !exists
+                    ? new Response
+                    {
+                        StatusCode = HttpStatusCode.NotFound,
+                        IsSuccess = false,
+                        Content = new BadResponse { Message = $"The user {request.Email} does not exist." }
+                    }
+                    : new Response
+                    {
+                        StatusCode = HttpStatusCode.OK,
+                        IsSuccess = true,
+                        Content = new UserResponse { Message = "User exist", Exists = true }
+                    };
+            }
+            catch (Exception ex)
+            {
+                return new Response
+                {
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    IsSuccess = false,
+                    Content = new BadResponse { Message = ex.Message }
+                };
+            }
+        }
+
+        public async Task<Response> GetUserInfo(GetUserInfoRequest request)
+        {
+            try
+            {
+                User entity = await _userRepository.FinduserEmailAsync(request.Email);
+                if (entity == null)
                 {
                     return new Response
                     {
@@ -70,11 +97,13 @@ namespace HelloBuild.Application.Services
                     };
                 }
 
+                GetUserInfoResponse response = _mapper.Map<GetUserInfoResponse>(entity);
+
                 return new Response
                 {
                     StatusCode = HttpStatusCode.OK,
                     IsSuccess = true,
-                    Content = new UserResponse { Message = "User exist", Exists = true }
+                    Content = response
                 };
             }
             catch (Exception ex)
@@ -87,5 +116,6 @@ namespace HelloBuild.Application.Services
                 };
             }
         }
+
     }
 }

@@ -11,10 +11,17 @@ namespace HelloBuild.Infrastructure.Repositories
         public UserRepository(PersistenceContext context)
             : base(context) { }
 
+        public async Task<User?> FinduserEmailAsync(string email)
+        {
+            return string.IsNullOrEmpty(email)
+                ? null
+                : await _context.Users.FirstOrDefaultAsync(x => x.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
+        }
+
         public async Task<bool> FinduserEmailPasswordAsync(UserExistRequest user)
         {
-            return (!string.IsNullOrEmpty(user.Email) && !string.IsNullOrEmpty(user.Password)) 
-                && await _context.Users.AnyAsync((entity) => (entity.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase) && entity.Password.Equals(user.Password)));
+            return !string.IsNullOrEmpty(user.Email) && !string.IsNullOrEmpty(user.Password)
+                && await _context.Users.AnyAsync((entity) => entity.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase) && entity.Password.Equals(user.Password));
         }
     }
 }

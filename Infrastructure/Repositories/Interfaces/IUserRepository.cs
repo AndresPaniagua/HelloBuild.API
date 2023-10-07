@@ -6,5 +6,7 @@ namespace HelloBuild.Infrastructure.Repositories.Interfaces
     public interface IUserRepository : IBaseRepository<User>
     {
         Task<bool> FinduserEmailPasswordAsync(UserExistRequest user);
+
+        Task<User> FinduserEmailAsync(string email);
     }
 }
