@@ -1,6 +1,7 @@
 using AutoMapper;
 using HelloBuild.Application.Services;
 using HelloBuild.Application.Services.Interfaces;
+using HelloBuild.Domain.Models;
 using HelloBuild.Infrastructure.Context;
 using HelloBuild.Infrastructure.Mapper;
 using HelloBuild.Infrastructure.Repositories;
@@ -30,6 +31,19 @@ namespace HelloBuild.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            IConfigurationSection sectionConfig = Configuration.GetSection("SectionConfigurationWebApi");
+            _ = services.Configure<SectionConfigurationWebApi>(sectionConfig);
+            SectionConfigurationWebApi configAppSetting = sectionConfig.Get<SectionConfigurationWebApi>();
+
+            _ = services.AddCors(options => options.AddPolicy("AllowPolicySecureDomains", op =>
+            {
+                _ = op.AllowAnyOrigin()
+                .WithOrigins(configAppSetting.SecureDomains)
+                .AllowAnyHeader()
+                .AllowCredentials()
+                .AllowAnyMethod();
+            }));
+
             AddSwaggerDocument(services);
 
             AddDbContext(services);
@@ -50,6 +64,8 @@ namespace HelloBuild.Api
             _ = app.UseHttpsRedirection();
             _ = app.UseRouting();
 
+
+            _ = app.UseCors("AllowPolicySecureDomains");
             _ = app.UseEndpoints(endpoints =>
             {
                 _ = endpoints.MapControllers();
