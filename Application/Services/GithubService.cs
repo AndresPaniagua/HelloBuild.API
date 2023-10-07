@@ -1,7 +1,7 @@
 ﻿using HelloBuild.Application.Services.Interfaces;
 using HelloBuild.Domain.Models;
+using Newtonsoft.Json;
 using Octokit;
-using ProductHeaderValue = Octokit.ProductHeaderValue;
 
 namespace HelloBuild.Application.Services
 {
@@ -18,7 +18,12 @@ namespace HelloBuild.Application.Services
 
                 IReadOnlyList<Repository> repositories = await client.Repository.GetAllForUser(username);
 
-                List<GitRepositoryResponse> repositoryNames = repositories.Select(repo => new GitRepositoryResponse { Name = repo.Name, Description = repo.Description }).ToList();
+                List<GitRepositoryResponse> repositoryNames = repositories.Select(repo => new GitRepositoryResponse
+                {
+                    Name = repo.Name,
+                    Description = repo.Description,
+                    SvnUrl = repo.SvnUrl
+                }).ToList();
 
                 return (true, repositoryNames);
             }
@@ -26,6 +31,37 @@ namespace HelloBuild.Application.Services
             {
                 Console.WriteLine(ex.Message);
                 return (false, new());
+            }
+        }
+
+        public async Task<(bool, List<GitRepositoryResponse>)> GetFavoriteRepositories(string username, string personalToken)
+        {
+            try
+            {
+                HttpClient httpClient = new();
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {personalToken}");
+                httpClient.DefaultRequestHeaders.Add("User-Agent", "HelloBuild");
+
+                string apiUrl = $"https://api.github.com/users/{username}/starred";
+
+                HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string content = await response.Content.ReadAsStringAsync();
+                    List<GitRepositoryResponse>? favoriteRepositories = JsonConvert.DeserializeObject<List<GitRepositoryResponse>>(content);
+                    return (true, favoriteRepositories ?? new List<GitRepositoryResponse>());
+                }
+                else
+                {
+                    Console.WriteLine($"Error: {response.StatusCode}");
+                    return (false, new List<GitRepositoryResponse>());
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return (false, new List<GitRepositoryResponse>());
             }
         }
 
