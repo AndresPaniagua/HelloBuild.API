@@ -6,6 +6,14 @@
     <DebugType>Full</DebugType>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Application\**" />
+    <Compile Remove="Infrastructure\**" />
+    <EmbeddedResource Remove="Application\**" />
+    <EmbeddedResource Remove="Infrastructure\**" />
+    <None Remove="Application\**" />
+    <None Remove="Infrastructure\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="appsettings.json" />
   </ItemGroup>
   <ItemGroup>
@@ -16,6 +24,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.0" />
@@ -32,9 +42,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HelloBuild.Api\HelloBuild.Api.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Application\" />
-    <Folder Include="Infrastructure\" />
   </ItemGroup>
 </Project>
